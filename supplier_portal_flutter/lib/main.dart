@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supplier_portal_flutter/jobLocationsScreen.dart';
 import 'package:supplier_portal_flutter/login.dart';
 
 void main() {
@@ -29,7 +30,7 @@ class MyApp extends StatelessWidget {
       ),
       
       themeMode: ThemeMode.system,
-      home: const Login(),
+      home: const JobLocationsScreen(),
     );
   }
 }
