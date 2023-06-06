@@ -58,7 +58,40 @@ class _HomeState extends State<Home> {
             setState(() {});
           });
         }
+  
+  Timer? _timer;
+  int _secondsElapsed = 0;
+  bool _timerRunning = false;
 
+  void startTimer() {
+    if (!_timerRunning) {
+      _timerRunning = true;
+      _secondsElapsed = 0;
+      _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+        setState(() {
+          _secondsElapsed++;
+        });
+      });
+    }
+  }
+
+  void stopTimer() {
+    if (_timerRunning) {
+      _timer?.cancel();
+      _timerRunning = false;
+    }
+  }
+
+  String getTime(int secondsElapsed){
+    return '${(_secondsElapsed ~/ 3600).toString().padLeft(2, '0')}:${((_secondsElapsed % 3600) ~/ 60).toString().padLeft(2, '0')}:${(_secondsElapsed % 60).toString().padLeft(2, '0')}';
+  }
+
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
   // When this page starts loading
   @override
   void initState() {
@@ -69,11 +102,16 @@ class _HomeState extends State<Home> {
   // when drawing starts
   @override
   Widget build(BuildContext context) {
+    String timerText = getTime(_secondsElapsed);
+
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text("Home"),
+          foregroundColor: Theme.of(context).colorScheme.secondary,
+          // title: const Text("Home"),
+          title: Text(_timerRunning ? timerText : 'Home'),
+          
           actions: [
             PopupMenuButton(
               onSelected: (value) {
@@ -82,7 +120,7 @@ class _HomeState extends State<Home> {
                     
                     Navigator.pushReplacement(context,
                                     MaterialPageRoute(
-                                        builder: (context) => const Login(title: "Login")
+                                        builder: (context) => const Login()
                                     ),
                                   );    
                     break;
@@ -93,7 +131,7 @@ class _HomeState extends State<Home> {
               },
               itemBuilder: (context) {
                 return [
-                  const PopupMenuItem(child: Text("Logout"), value: 1,),
+                  const PopupMenuItem(value: 1,child: Text("Logout"),),
                 ];
               },
             )
@@ -122,28 +160,31 @@ class _HomeState extends State<Home> {
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
                     style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent), // Change background color
-                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Change text color
+                              backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.inversePrimary), // Change background color
+                              foregroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.secondary), // Change text color
                             ),
                     onPressed: () {
                       // Perform check-in logic
+                      startTimer();
+                      
                       debugPrint('Check-In');
                     },
                     child: const Text('Check-In'),
                   ),
                   ElevatedButton(
                     style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(Colors.blueAccent), // Change background color
-                              foregroundColor: MaterialStateProperty.all<Color>(Colors.white), // Change text color
+                              backgroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.inversePrimary), // Change background color
+                              foregroundColor: MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.secondary), // Change text color
                             ),
                     onPressed: () {
                       // Perform check-out logic
+                      stopTimer();
                       debugPrint('Check-Out');
                     },
                     child: const Text('Check-Out'),
