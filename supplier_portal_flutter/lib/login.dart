@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supplier_portal_flutter/home.dart';
 import 'package:supplier_portal_flutter/jobLocationsScreen.dart';
 
 class Login extends StatefulWidget {
@@ -27,7 +26,7 @@ class _Login extends State<Login> {
                 radius: 80,
                 backgroundImage: AssetImage('assets/images/ImpulzLogo.jpg'),
               ),
-              // email, password and login button
+              // form of email, password and login button
               Form(
                 key: _formKey,
                 child: Padding(
@@ -36,6 +35,7 @@ class _Login extends State<Login> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      // email
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 16),
@@ -51,6 +51,7 @@ class _Login extends State<Login> {
                           },
                         ),
                       ),
+                      // password
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 16),
@@ -68,6 +69,7 @@ class _Login extends State<Login> {
                           },
                         ),
                       ),
+                      // login button
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 8, vertical: 16),
@@ -97,7 +99,8 @@ class _Login extends State<Login> {
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const JobLocationsScreen()),
+                                        builder: (context) =>
+                                            const JobLocationsScreen()),
                                   );
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -125,7 +128,8 @@ class _Login extends State<Login> {
             ],
           ),
         ),
-        bottomNavigationBar: const SafeArea(child: BottomAppBar(
+        bottomNavigationBar: const SafeArea(
+            child: BottomAppBar(
           height: 45,
           child: Center(
             child: Text(

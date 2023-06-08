@@ -2,16 +2,26 @@
 //
 //     final JobLocations = JobLocationsFromJson(jsonString);
 
-import 'dart:convert';
+// import 'dart:convert';
 import 'dart:ffi';
-
+/*
 List<JobLocations> jobLocationsFromJson(String str) =>
     List<JobLocations>.from(json.decode(str).map((x) => JobLocations.fromJson(x)));
 
 String jobLocationsToJson(List<JobLocations> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
-
+*/
 class JobLocations {
+  String name;
+  String address;
+  String streetAddress;
+  String city;
+  String zipCode;
+  String state;
+  String country;
+  double longitude;
+  double latitude;
+
   JobLocations({
     required this.name,
     required this.address,
@@ -22,20 +32,9 @@ class JobLocations {
     required this.country,
     required this.longitude,
     required this.latitude,
-
-
   });
 
-  String name;
-  String address;
-  String streetAddress;
-  String city;
-  String zipCode;
-  String state;
-  String country;
-  Double longitude;
-  Double latitude;
-
+  /*
   factory JobLocations.fromJson(Map<String, dynamic> json) => JobLocations(
         name: json["name"],
         address: json["address"],
@@ -59,4 +58,5 @@ class JobLocations {
         "longitude": longitude,
         "latitude": latitude,
       };
+  */
 }

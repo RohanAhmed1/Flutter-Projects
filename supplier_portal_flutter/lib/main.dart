@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:supplier_portal_flutter/jobLocationsScreen.dart';
 import 'package:supplier_portal_flutter/login.dart';
 
 void main() {
@@ -9,28 +8,30 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   
-
-  // This widget is the root of your application.
+  // this widget is the root(entry point) of the application
   @override
   Widget build(BuildContext context) {
+    // Material UI
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      home: const Login(),
+      
+      // Default light theme settings
       theme: ThemeData(
-        // Default light theme settings
-        brightness: Brightness.light,
+        // brightness: Brightness.light,
         // primaryColor: Colors.amber,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
         useMaterial3: true,
       ),
+
+      // Dark theme settings
       darkTheme: ThemeData(
-        // Dark theme settings
         // brightness: Brightness.dark,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true
       ),
       
       themeMode: ThemeMode.system,
-      home: const JobLocationsScreen(),
     );
   }
 }
