@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:supplier_portal_flutter/jobLocationsScreen.dart';
+import 'package:supplier_portal_flutter/screens/job_location_screen.dart';
+import '../services/auth_service.dart';
+
 
 class Login extends StatefulWidget {
-  const Login({super.key});
+  const Login({super.key, required this.authService});
+
+  final AuthService authService;
 
   @override
   State<Login> createState() => _Login();
@@ -12,6 +16,48 @@ class _Login extends State<Login> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  void navigateToHome() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => JobLocationsScreen(authService: widget.authService)),
+    );
+  }
+
+  void checkLoggedIn() async {
+    final isLoggedIn = await widget.authService.isLoggedIn();
+    if (isLoggedIn) {
+      navigateToHome();
+    }
+  }
+
+  void loggedIn() async {
+    if (_formKey.currentState!.validate()) {
+      final email = emailController.text;
+      final password = passwordController.text;
+
+      final token = await widget.authService.login(email, password);
+
+      if (token != null) {
+        navigateToHome();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid Credentials')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill input')),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoggedIn();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,28 +138,9 @@ class _Login extends State<Login> {
                                       .secondary), // Change text color
                             ),
                             onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                if (emailController.text == "rohan@gmail.com" &&
-                                    passwordController.text == "123456") {
-                                  // debugPrint("Submit");
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const JobLocationsScreen()),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Invalid Credentials')),
-                                  );
-                                }
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Please fill input')),
-                                );
-                              }
+                              debugPrint("onPressed");
+                              loggedIn();
+
                             },
                             child: const Text(
                               'Login',

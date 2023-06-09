@@ -1,37 +1,17 @@
+import 'package:supplier_portal_flutter/api/api_service.dart';
+import 'package:supplier_portal_flutter/services/auth_service.dart';
+import 'package:supplier_portal_flutter/services/jwt_service.dart';
+import 'package:supplier_portal_flutter/storage/jwt_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:supplier_portal_flutter/login.dart';
+import 'app.dart';
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final JwtStorage jwtStorage = JwtStorage();
+  final JwtService jwtService = JwtService(jwtStorage: jwtStorage);
+  final ApiService apiService = ApiService();
+  final AuthService authService = AuthService(apiService: apiService, jwtService: jwtService);
   
-  // this widget is the root(entry point) of the application
-  @override
-  Widget build(BuildContext context) {
-    // Material UI
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const Login(),
-      
-      // Default light theme settings
-      theme: ThemeData(
-        // brightness: Brightness.light,
-        // primaryColor: Colors.amber,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.amber),
-        useMaterial3: true,
-      ),
-
-      // Dark theme settings
-      darkTheme: ThemeData(
-        // brightness: Brightness.dark,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true
-      ),
-      
-      themeMode: ThemeMode.system,
-    );
-  }
+  runApp(MyApp(authService: authService));
 }
+
+

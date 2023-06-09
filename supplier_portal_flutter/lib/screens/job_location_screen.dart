@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:supplier_portal_flutter/home.dart';
+import 'package:supplier_portal_flutter/screens/home_screen.dart';
 import 'package:supplier_portal_flutter/models/jobLocations.dart';
+import 'package:supplier_portal_flutter/services/auth_service.dart';
 
-import 'login.dart';
+import 'login_screen.dart';
 
 class JobLocationsScreen extends StatefulWidget {
-  const JobLocationsScreen({super.key});
+  const JobLocationsScreen({super.key, required this.authService});
+
+  final AuthService authService;
 
   @override
   State<JobLocationsScreen> createState() => _JobLocationsScreenState();
@@ -77,6 +80,14 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
   ];
   List<JobLocations> filteredLocationsList = [];
 
+  void logout() {
+    widget.authService.logout();
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => Login(authService: widget.authService,)),
+    );
+  }
+
   @override
   void initState() {
     filteredLocationsList = locationsList;
@@ -105,14 +116,10 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                   PopupMenuButton(
                     onSelected: (value) {
                       switch (value) {
+                        // logout menu item
                         case 1:
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Login()),
-                          );
+                          logout();
                           break;
-
                         default:
                       }
                     },
@@ -145,8 +152,8 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                     // debugPrint("location: $location");
                     return Card(
                         elevation: 2,
-                        margin:
-                            const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
                         child: ListTile(
                           // Name: Location Name
                           title: RichText(
@@ -192,7 +199,8 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.where_to_vote_outlined),
+                                    icon: const Icon(
+                                        Icons.where_to_vote_outlined),
                                     tooltip: "Checkin",
                                     onPressed: () {
                                       // Perform check-in logic
@@ -200,7 +208,8 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                                     },
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.location_off_outlined),
+                                    icon:
+                                        const Icon(Icons.location_off_outlined),
                                     tooltip: "Checkout",
                                     onPressed: () {
                                       // Perform checkout logic
