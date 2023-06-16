@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supplier_portal_flutter/screens/job_location_screen.dart';
 import '../services/auth_service.dart';
 
-
 class Login extends StatefulWidget {
   const Login({super.key, required this.authService});
 
@@ -21,7 +20,8 @@ class _Login extends State<Login> {
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-          builder: (context) => JobLocationsScreen(authService: widget.authService)),
+          builder: (context) =>
+              JobLocationsScreen(authService: widget.authService)),
     );
   }
 
@@ -56,11 +56,13 @@ class _Login extends State<Login> {
   @override
   void initState() {
     super.initState();
+
     checkLoggedIn();
   }
 
   @override
   Widget build(BuildContext context) {
+    // final authService = Provider.of<AuthService>(context);
     return SafeArea(
       child: Scaffold(
         body: Center(
@@ -121,31 +123,28 @@ class _Login extends State<Login> {
                             horizontal: 8, vertical: 16),
                         child: Center(
                           child: ElevatedButton(
-                            style: ButtonStyle(
-                              shape: MaterialStateProperty.all<
-                                      RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(6),
-                              )),
-                              backgroundColor: MaterialStateProperty.all<
-                                  Color>(Theme.of(
-                                      context)
-                                  .colorScheme
-                                  .inversePrimary), // Change background color
-                              foregroundColor: MaterialStateProperty.all<Color>(
-                                  Theme.of(context)
-                                      .colorScheme
-                                      .secondary), // Change text color
-                            ),
-                            onPressed: () {
-                              debugPrint("onPressed");
-                              loggedIn();
-
-                            },
-                            child: const Text(
-                              'Login',
-                            ),
-                          ),
+                              style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(6),
+                                )),
+                                backgroundColor: MaterialStateProperty.all<
+                                    Color>(Theme.of(
+                                        context)
+                                    .colorScheme
+                                    .inversePrimary), // Change background color
+                                foregroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .secondary), // Change text color
+                              ),
+                              onPressed: () {
+                                debugPrint("onPressed");
+                                loggedIn();
+                              },
+                              child: Text("Login")),
                         ),
                       ),
                     ],

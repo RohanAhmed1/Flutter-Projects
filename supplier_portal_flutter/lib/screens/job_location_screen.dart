@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:supplier_portal_flutter/constants/app_constants.dart';
+import 'package:supplier_portal_flutter/models/base_model.dart';
+import 'package:supplier_portal_flutter/models/company.dart';
+import 'package:supplier_portal_flutter/models/employee_clock_model.dart';
 import 'package:supplier_portal_flutter/models/job_site.dart';
-import 'package:supplier_portal_flutter/screens/home_screen.dart';
+import 'package:supplier_portal_flutter/screens/map_screen.dart';
 import 'package:supplier_portal_flutter/models/jobLocations.dart';
 import 'package:supplier_portal_flutter/services/auth_service.dart';
+import 'package:supplier_portal_flutter/services/rest/base_service.dart';
+import 'package:supplier_portal_flutter/services/rest/checkin_checkout_service.dart';
+import 'package:supplier_portal_flutter/services/rest/employee_service.dart';
 import 'package:supplier_portal_flutter/services/rest/job_site_service.dart';
+import 'package:supplier_portal_flutter/storage/company_provider.dart';
 
 import 'login_screen.dart';
 
@@ -18,87 +27,51 @@ class JobLocationsScreen extends StatefulWidget {
 }
 
 class _JobLocationsScreenState extends State<JobLocationsScreen> {
-  List<JobLocations> locationsList = [
-    JobLocations(
-        name: "Chicago Union Station",
-        address: "225 S Canal St, Chicago, IL 60606",
-        streetAddress: "streetAddress",
-        city: "city",
-        zipCode: "zipCode",
-        state: "state",
-        country: "USA",
-        longitude: -87.63538390232054,
-        latitude: 41.891374852838894),
-    JobLocations(
-        name: "Home",
-        address: "1200 Keim Trail, Bartlett, IL 60103",
-        streetAddress: "streetAddress",
-        city: "city",
-        zipCode: "zipCode",
-        state: "state",
-        country: "USA",
-        longitude: -88.18783790185631,
-        latitude: 41.96285638808078),
-    JobLocations(
-        name: "Office",
-        address: "400 W Lake St, Roselle, IL 60172",
-        streetAddress: "streetAddress",
-        city: "city",
-        zipCode: "zipCode",
-        state: "state",
-        country: "USA",
-        longitude: -88.09161618969705,
-        latitude: 41.96132466225174),
-    JobLocations(
-        name: "Walmart Supercenter",
-        address: "314 W Army Trail Rd, Bloomingdale, IL 60108",
-        streetAddress: "streetAddress",
-        city: "city",
-        zipCode: "zipCode",
-        state: "state",
-        country: "USA",
-        longitude: -88.10256334232676,
-        latitude: 41.93676549608121),
-    JobLocations(
-        name: "Walmart Supercenter",
-        address: "314 W Army Trail Rd, Bloomingdale, IL 60108",
-        streetAddress: "streetAddress",
-        city: "city",
-        zipCode: "zipCode",
-        state: "state",
-        country: "USA",
-        longitude: -88.10256334232676,
-        latitude: 41.93676549608121),
-    JobLocations(
-        name: "Walmart Supercenter",
-        address: "314 W Army Trail Rd, Bloomingdale, IL 60108",
-        streetAddress: "streetAddress",
-        city: "city",
-        zipCode: "zipCode",
-        state: "state",
-        country: "USA",
-        longitude: -88.10256334232676,
-        latitude: 41.93676549608121),
-  ];
-  List<JobLocations> filteredLocationsList = [];
+  late BaseService<JobSite> _jobSiteService;
+  final _employeeClock = EmployeeClockService();
+  List<JobSite> jobSitesList = [];
+  List<JobSite> filteredJobSitesList = [];
+
+
+  Future<void> requestJobSites() async {
+    try {
+      // Fetch job sites from the server using the JobSiteService or your API service class
+      _jobSiteService = JobSiteService(); // Replace with your API service class
+      List<JobSite> jobSites = await _jobSiteService.getAll();
+
+      setState(() {
+        jobSitesList = jobSites;
+        filteredJobSitesList = jobSites;
+      });
+    } catch (error) {
+      // Handle error
+      print('Error fetching job sites: $error');
+    }
+  }
 
   void logout() {
     widget.authService.logout();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => Login(authService: widget.authService,)),
+      MaterialPageRoute(
+          builder: (context) => Login(
+                authService: widget.authService,
+              )),
     );
   }
 
   @override
   void initState() {
-    filteredLocationsList = locationsList;
+    // print(widget.authService.jwtService.getToken().then((value) => value));
+    // var job_list = BaseService<JobSite>(apiEndPoint: '${AppConstants.SERVER_IP}/jobSite', token: widget.authService.getToken() ).getAll();
+    // print(job_list);
     super.initState();
+    requestJobSites();
   }
 
   void filterLocation(String query) {
     setState(() {
-      filteredLocationsList = locationsList
+      filteredJobSitesList = jobSitesList
           .where((location) =>
               location.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -108,13 +81,37 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final companyProvider = Provider.of<CompanyProvider>(context);
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
                 backgroundColor: Theme.of(context).colorScheme.inversePrimary,
                 foregroundColor: Theme.of(context).colorScheme.secondary,
-                title: const Center(child: Text('Job Locations')),
+                title: const Text('Job Locations'),
                 actions: [
+                  Consumer<CompanyProvider>(
+                    builder: (context, provider, _) => Padding(
+                      padding: const EdgeInsets.only(right: 16.0),
+                      child: DropdownButton<String>(
+                        value: companyProvider.selectedCompanyId,
+                        onChanged: (newValue) {
+                          CompanyProvider().selectedCompanyId = newValue!;
+                          companyProvider.selectedCompanyId = newValue;
+                        },
+                        items: [
+                          DropdownMenuItem(
+                            value: 'DAT',
+                            child: Text('DAT'),
+                          ),
+                          DropdownMenuItem(
+                            value: 'USSR',
+                            child: Text('USSR'),
+                          ),
+                          // Add more company options
+                        ],
+                      ),
+                    ),
+                  ),
                   PopupMenuButton(
                     onSelected: (value) {
                       switch (value) {
@@ -146,18 +143,18 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                   ),
                 ),
               ),
+              // List
               Expanded(
                 child: ListView.builder(
-                  itemCount: filteredLocationsList.length,
+                  itemCount: filteredJobSitesList.length,
                   itemBuilder: (context, index) {
-                    final location = filteredLocationsList[index];
-                    // debugPrint("location: $location");
+                    final location = filteredJobSitesList[index];
                     return Card(
                         elevation: 2,
                         margin: const EdgeInsets.symmetric(
                             horizontal: 16, vertical: 8),
                         child: ListTile(
-                          // Name: Location Name
+                          // Name: <LocationName>
                           title: RichText(
                             text: TextSpan(
                               style: DefaultTextStyle.of(context).style,
@@ -177,7 +174,7 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                           subtitle: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // const SizedBox(height: 8),
+                              const SizedBox(height: 8),
                               // Address: Location Address
                               RichText(
                                 text: TextSpan(
@@ -205,8 +202,9 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                                         Icons.where_to_vote_outlined),
                                     tooltip: "Checkin",
                                     onPressed: () {
-                                      // Perform check-in logic
-                                      debugPrint('Check-In');
+
+                                      _employeeClock.checkIn(1, location.id);
+                                      debugPrint('${location.id}');
                                     },
                                   ),
                                   IconButton(
@@ -215,6 +213,7 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                                     tooltip: "Checkout",
                                     onPressed: () {
                                       // Perform checkout logic
+                                      _employeeClock.checkOut(1, location.id);
                                       debugPrint('Check-Out');
                                     },
                                   ),

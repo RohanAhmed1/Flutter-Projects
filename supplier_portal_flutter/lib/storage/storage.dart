@@ -1,22 +1,28 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class JwtStorage {
-  // secured storage for sensitive data
+class Storage extends ChangeNotifier {
+  static Storage? _instance;
   final storage = const FlutterSecureStorage();
-  
-  
-  // get JWT token from the storage
+
+  factory Storage() {
+    _instance ??= Storage._();
+    return _instance!;
+  }
+
+  Storage._();
+
   Future<String?> getJwtToken() async {
     return await storage.read(key: 'jwt_token');
   }
 
-  // store the JWT token
   Future<void> storeJwtToken(String token) async {
     await storage.write(key: 'jwt_token', value: token);
+    notifyListeners();
   }
 
-  // delete the JWT token from the storage
   Future<void> deleteJwtToken() async {
     await storage.delete(key: 'jwt_token');
+    notifyListeners();
   }
 }

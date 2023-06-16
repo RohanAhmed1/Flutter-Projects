@@ -1,10 +1,8 @@
-import 'package:supplier_portal_flutter/storage/jwt_storage.dart';
+import 'package:supplier_portal_flutter/storage/storage.dart';
 
 class JwtService {
-  final JwtStorage jwtStorage;
-
-  JwtService({required this.jwtStorage});
-
+  final Storage jwtStorage = Storage(); 
+  
   // store the jwt token
   Future<void> storeToken(String token) async {
     return jwtStorage.storeJwtToken(token);
@@ -17,6 +15,7 @@ class JwtService {
 
   // get the jwt token
   Future<String?> getToken() async {
-    return jwtStorage.getJwtToken();
+    return await jwtStorage.getJwtToken();
   }
+
 }

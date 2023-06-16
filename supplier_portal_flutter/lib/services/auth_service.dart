@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:supplier_portal_flutter/api/api_service.dart';
 import 'package:supplier_portal_flutter/services/jwt_service.dart';
+import 'package:provider/provider.dart';
 
 class AuthService {
-
   final ApiService apiService;
   final JwtService jwtService;
 
@@ -30,4 +31,12 @@ class AuthService {
   Future<void> logout() async {
     jwtService.deleteToken();
   }
+
+  Future<String?> getToken() async {
+    return await jwtService.getToken();
+  }
+  static AuthService of(BuildContext context) {
+    return Provider.of<AuthService>(context, listen: false);
+  }
+
 }

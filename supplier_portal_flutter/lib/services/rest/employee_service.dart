@@ -6,7 +6,6 @@ class EmployeeService extends BaseService<Employee> {
 
   EmployeeService() : super(apiEndPoint: _apiEndPoint);
 
-
   @override
   Employee createModelInstance() {
     return Employee();

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:supplier_portal_flutter/services/current_location_service.dart';
+import 'package:supplier_portal_flutter/services/rest/checkin_checkout_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, required this.title, required this.location});
@@ -14,6 +16,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  final _employeeClock = EmployeeClockService();
   final Completer<GoogleMapController> _controller = Completer();
   // we have specified starting camera position
   static const CameraPosition _kGoogle = CameraPosition(
@@ -23,27 +26,16 @@ class _HomeState extends State<Home> {
 
   // the list of markers, which will shown in map
   final List<Marker> _markers = <Marker>[];
-
-  // method for getting user current location with permission
-  Future<Position> getUserCurrentLocation() async {
-    await Geolocator.requestPermission()
-        .then((value) {})
-        .onError((error, stackTrace) async {
-      await Geolocator.requestPermission();
-      debugPrint("ERROR: $error");
-    });
-    return await Geolocator.getCurrentPosition();
-  }
-
+  /*
   // method for moving screen to user current location
   void moveToCurrentPosition() async {
-    getUserCurrentLocation().then((value) async {
-      debugPrint("${value.latitude} ${value.longitude}");
+      final longLat = await CurrentLocation.getUserCurrentLocation();
+
 
       // marker added for current user location
       _markers.add(Marker(
         markerId: const MarkerId("1"),
-        position: LatLng(value.latitude, value.longitude),
+        position: LatLng(longLat.latitude, longLat.longitude),
         infoWindow: const InfoWindow(
           title: 'Current Location',
         ),
@@ -51,16 +43,15 @@ class _HomeState extends State<Home> {
 
       // specified current users location
       CameraPosition cameraPosition = CameraPosition(
-        target: LatLng(value.latitude, value.longitude),
+        target: LatLng(longLat.latitude, longLat.longitude),
         zoom: 14,
       );
 
       final GoogleMapController controller = await _controller.future;
       controller.animateCamera(CameraUpdate.newCameraPosition(cameraPosition));
       setState(() {});
-    });
-  }
-
+    }
+  */
   // method for moving screen to user job location
   void moveTojobPosition() async {
     debugPrint("${widget.location.latitude} ${widget.location.longitude}");
@@ -77,7 +68,7 @@ class _HomeState extends State<Home> {
     // specified current users location
     CameraPosition cameraPosition = CameraPosition(
       target: widget.location,
-      zoom: 14,
+      zoom: 18,
     );
 
     final GoogleMapController controller = await _controller.future;
@@ -226,22 +217,6 @@ class _HomeState extends State<Home> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  // ElevatedButton.icon(onPressed: () {}, icon: Icon(Icons.where_to_vote), label: Text("Checkin")),
-                  // ElevatedButton.icon(onPressed: () {}, icon: Icon(Icons.location_off_outlined), label: Text("Checkout")),
-                  /*
-                  IconButton(
-                    icon: Icon(Icons.where_to_vote),
-                    onPressed: () {
-                      // Perform action when home button is pressed
-                    },
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.location_off_outlined),
-                    onPressed: () {
-                      // Perform action when search button is pressed
-                    },
-                  ),
-                  */
                   ElevatedButton.icon(
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -259,6 +234,7 @@ class _HomeState extends State<Home> {
                     ),
                     onPressed: () {
                       // Perform check-in logic
+                      // _employeeClock.checkIn(1, location.id);
                       startTimer();
 
                       debugPrint('Check-In');
@@ -284,6 +260,7 @@ class _HomeState extends State<Home> {
                       ),
                       onPressed: () {
                         // Perform check-out logic
+                        // _employeeClock.checkOut(1, widget.location.id);
                         stopTimer();
                         debugPrint('Check-Out');
                       },

@@ -4,7 +4,7 @@ import 'package:supplier_portal_flutter/constants/app_constants.dart';
 
 
 class ApiService {
-  static const String loginEndpoint = '/api/user/login';
+  static const String loginEndpoint = '/user/login';
 
   // api call for login
   Future<String?> login(String email, String password) async {
@@ -14,6 +14,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final token = jsonDecode(response.body)['token'];
+      print(token);
       return token;
     } else {
       return null;
