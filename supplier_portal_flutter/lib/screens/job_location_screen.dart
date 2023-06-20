@@ -1,17 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:supplier_portal_flutter/constants/app_constants.dart';
-import 'package:supplier_portal_flutter/models/base_model.dart';
 import 'package:supplier_portal_flutter/models/company.dart';
-import 'package:supplier_portal_flutter/models/employee_clock_model.dart';
 import 'package:supplier_portal_flutter/models/job_site.dart';
 import 'package:supplier_portal_flutter/screens/map_screen.dart';
-import 'package:supplier_portal_flutter/models/jobLocations.dart';
 import 'package:supplier_portal_flutter/services/auth_service.dart';
 import 'package:supplier_portal_flutter/services/rest/base_service.dart';
 import 'package:supplier_portal_flutter/services/rest/checkin_checkout_service.dart';
-import 'package:supplier_portal_flutter/services/rest/employee_service.dart';
+import 'package:supplier_portal_flutter/services/rest/company_service.dart';
 import 'package:supplier_portal_flutter/services/rest/job_site_service.dart';
 import 'package:supplier_portal_flutter/storage/company_provider.dart';
 
@@ -28,24 +24,40 @@ class JobLocationsScreen extends StatefulWidget {
 
 class _JobLocationsScreenState extends State<JobLocationsScreen> {
   late BaseService<JobSite> _jobSiteService;
+  late BaseService<Company> _companyService;
   final _employeeClock = EmployeeClockService();
   List<JobSite> jobSitesList = [];
   List<JobSite> filteredJobSitesList = [];
+  List<Company> companyList = [];
+  
+  Future<void> requestCompanies() async {
+    try {
+      // Fetch job sites from the server using the JobSiteService or your API service class
+      _companyService = CompanyService();
+      List<Company> companies = await _companyService.getAll();
 
+      setState(() {
+        companyList = companies;
+      });
+    } catch (error) {
+      // Handle error
+      debugPrint('Error fetching job sites: $error');
+    }
+  }
 
   Future<void> requestJobSites() async {
     try {
       // Fetch job sites from the server using the JobSiteService or your API service class
-      _jobSiteService = JobSiteService(); // Replace with your API service class
+      _jobSiteService = JobSiteService();
       List<JobSite> jobSites = await _jobSiteService.getAll();
 
       setState(() {
-        jobSitesList = jobSites;
+        jobSitesList = jobSites.toList();
         filteredJobSitesList = jobSites;
       });
     } catch (error) {
       // Handle error
-      print('Error fetching job sites: $error');
+      debugPrint('Error fetching job sites: $error');
     }
   }
 
@@ -62,9 +74,6 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
 
   @override
   void initState() {
-    // print(widget.authService.jwtService.getToken().then((value) => value));
-    // var job_list = BaseService<JobSite>(apiEndPoint: '${AppConstants.SERVER_IP}/jobSite', token: widget.authService.getToken() ).getAll();
-    // print(job_list);
     super.initState();
     requestJobSites();
   }
@@ -97,6 +106,7 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                         onChanged: (newValue) {
                           CompanyProvider().selectedCompanyId = newValue!;
                           companyProvider.selectedCompanyId = newValue;
+                          requestJobSites();
                         },
                         items: [
                           DropdownMenuItem(
@@ -201,20 +211,30 @@ class _JobLocationsScreenState extends State<JobLocationsScreen> {
                                     icon: const Icon(
                                         Icons.where_to_vote_outlined),
                                     tooltip: "Checkin",
-                                    onPressed: () {
-
-                                      _employeeClock.checkIn(1, location.id);
+                                    onPressed: () async {
+                                      debugPrint('Check-In');
                                       debugPrint('${location.id}');
+                                      final checkInRes = await _employeeClock
+                                          .checkIn(1, location.id);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(content: Text(checkInRes)),
+                                      );
                                     },
                                   ),
                                   IconButton(
                                     icon:
                                         const Icon(Icons.location_off_outlined),
                                     tooltip: "Checkout",
-                                    onPressed: () {
-                                      // Perform checkout logic
-                                      _employeeClock.checkOut(1, location.id);
+                                    onPressed: () async {
                                       debugPrint('Check-Out');
+                                      debugPrint('${location.id}');
+                                      final checkOutRes = await _employeeClock
+                                          .checkOut(1, location.id);
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(content: Text(checkOutRes)),
+                                      );
                                     },
                                   ),
                                   IconButton(

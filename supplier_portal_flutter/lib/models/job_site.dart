@@ -1,20 +1,21 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:supplier_portal_flutter/models/base_model.dart';
 
-part 'job_site.g.dart'; // Generated file will have this name
 /*
+part 'job_site.g.dart'; // Generated file will have this name
+
 @JsonSerializable()
 class JobSite extends BaseModel {
   late String projectCode;
   late String name;
   late String companyCode;
   late String address;
-  late String street;
-  late String city;
-  late String state;
-  late String zipCode;
-  late String county;
-  late String country;
+  late String? street;
+  late String? city;
+  late String? state;
+  late String? zipCode;
+  late String? country;
+  late String? county;
   late double latitude;
   late double longitude;
   late bool active;
@@ -43,7 +44,7 @@ class JobSite extends BaseModel {
   */
 
   @override
-  JobSite deserializeJson(Map<String, dynamic> json) => _$JobSiteFromJson(json);
+  void deserializeJson(Map<String, dynamic> json) => _$JobSiteFromJson(json);
 
   @override
   Map<String, dynamic> serializeToJson() => _$JobSiteToJson(this);

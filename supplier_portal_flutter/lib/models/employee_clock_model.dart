@@ -1,4 +1,33 @@
+// import 'package:json_annotation/json_annotation.dart';
 import 'package:supplier_portal_flutter/models/base_model.dart';
+
+/*
+part 'employee_clock_model.g.dart';
+
+@JsonSerializable()
+class EmployeeClock extends BaseModel {
+  late int employee;
+  late int jobSite;
+  late DateTime? clockInDateTime;
+  DateTime? clockOutDateTime;
+  double? clockInLatitude;
+  double? clockInLongitude;
+  double? clockOutLatitude;
+  double? clockOutLongitude;
+  late String companyCode;
+  double? elapsedTime;
+
+  @override
+  late int id;
+  
+  @override
+  void deserializeJson(Map<String, dynamic> json) => _$EmployeeClockFromJson(json);
+
+  @override
+  Map<String, dynamic> serializeToJson() => _$EmployeeClockToJson(this);
+}
+*/
+
 
 class EmployeeClock extends BaseModel {
   late int employee;
@@ -46,3 +75,4 @@ class EmployeeClock extends BaseModel {
     elapsedTime = json['elapsedTime'];
   }
 }
+

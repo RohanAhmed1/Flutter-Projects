@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:supplier_portal_flutter/constants/app_constants.dart';
 import 'package:supplier_portal_flutter/models/employee_clock_model.dart';
 import 'package:supplier_portal_flutter/services/rest/base_service.dart';
 import 'package:supplier_portal_flutter/services/current_location_service.dart';
@@ -12,8 +9,10 @@ class EmployeeClockService extends BaseService<EmployeeClock> {
   EmployeeClock createModelInstance() {
     return EmployeeClock();
   }
-  // employee checkIn 
-  Future<EmployeeClock> checkIn(int employeeId, int jobSiteId) async {
+
+  // employee checkIn
+  Future<String> checkIn(int employeeId, int jobSiteId) async {
+    // prepare the data
     final clockInDateTime = DateTime.now().toString();
     final longLat = await CurrentLocation.getUserCurrentLocation();
     final clockInDataJson = {
@@ -24,14 +23,26 @@ class EmployeeClockService extends BaseService<EmployeeClock> {
       "clockInLatitude": longLat.latitude,
       "clockInLongitude": longLat.longitude,
     };
+    // creating a model
     EmployeeClock clockInData = EmployeeClock();
     clockInData.deserializeJson(clockInDataJson);
-    final createdClockIn = await create(clockInData);
-    return createdClockIn;
-  }
 
+    final createdClockIn = await create(clockInData);
+
+    // response based on code
+    if (createdClockIn['code'] == 201){
+     return 'Successfully checkedin'; 
+    }
+    else if (createdClockIn['code'] == 409){
+      return 'This location has already been checked';
+    }
+    else {
+      return 'Unable to perform checkin';
+    }
+  }
   // employee checkOut
-  Future<EmployeeClock> checkOut(int employeeId, int jobSiteId) async {
+  Future<String> checkOut(int employeeId, int jobSiteId) async {
+    // prepare the data
     final clockOutDateTime = DateTime.now().toString();
     final longLat = await CurrentLocation.getUserCurrentLocation();
     // final existingClockIn = await getExistingClockIn(employeeId, jobSiteId);
@@ -43,8 +54,10 @@ class EmployeeClockService extends BaseService<EmployeeClock> {
       "clockOutLatitude": longLat.latitude,
       "clockOutLongitude": longLat.longitude,
     };
+    // create a model instance
     EmployeeClock clockOutData = EmployeeClock();
     clockOutData.deserializeJson(clockOutDataJson);
+
     /*
     if (existingClockIn != null) {
       existingClockIn.clockOutDateTime = clockOutDateTime;
@@ -52,15 +65,17 @@ class EmployeeClockService extends BaseService<EmployeeClock> {
       return updatedClockOut;
     }
     */
-    try {
-
     final updatedClockOut = await update(clockOutData, employeeId);
-      return updatedClockOut;
-    } catch (err){
-
-    throw Exception('No existing check-in record found.');
+    // response based on code
+    if (updatedClockOut['code'] == 201){
+     return 'Successfully checkedout'; 
     }
-
+    else if (updatedClockOut['code'] == 400){
+      return 'This location has not been checkedIn';
+    }
+    else {
+      return 'Unable to perform checkout';
+    }
   }
 
   /*

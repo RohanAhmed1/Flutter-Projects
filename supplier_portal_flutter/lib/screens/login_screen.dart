@@ -154,19 +154,14 @@ class _Login extends State<Login> {
             ],
           ),
         ),
-        bottomNavigationBar: const SafeArea(
-            child: BottomAppBar(
-          height: 45,
-          child: Center(
-            child: Text(
-              'Impulz Technologies LLC © 2023', // Updated footer text
-              style: TextStyle(
-                color: Colors.grey, // Set the desired color for the footer text
-                fontSize: 16,
-              ),
-            ),
-          ),
-        )),
+        bottomNavigationBar: Container(
+        padding: EdgeInsets.all(14),
+        color: Colors.grey[200],
+        child: Text(
+          '© 2023 Impulz Technologies',
+          textAlign: TextAlign.center,
+        ),
+      ),
       ),
     );
   }
