@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+// import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:supplier_portal_flutter/services/current_location_service.dart';
-import 'package:supplier_portal_flutter/services/rest/checkin_checkout_service.dart';
+// import 'package:supplier_portal_flutter/services/current_location_service.dart';
+// import 'package:supplier_portal_flutter/services/rest/checkin_checkout_service.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key, required this.title, required this.location});
@@ -16,7 +16,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final _employeeClock = EmployeeClockService();
+  // final _employeeClock = EmployeeClockService();
   final Completer<GoogleMapController> _controller = Completer();
   // we have specified starting camera position
   static const CameraPosition _kGoogle = CameraPosition(
