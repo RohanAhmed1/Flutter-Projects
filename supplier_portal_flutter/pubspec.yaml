@@ -43,7 +43,6 @@ dependencies:
   json_annotation: ^4.8.1
   provider: ^6.0.5
   get_ip_address: ^0.0.6
-  flutter_background_geolocation: ^4.11.1
   sqflite: ^2.2.8+4
 
 dev_dependencies:
